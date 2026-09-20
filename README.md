@@ -2,7 +2,7 @@
 
 Personal algorithmic trading platform for Indian markets, built on Zerodha Kite Connect with AI-assisted research and a three-stream **smart-money** signal subsystem (conviction / flow / red-flag) that scores both new candidates (discovery) and existing holdings.
 
-> 📊 **[Interactive walkthrough — how the system works](docs/how-it-works.html)** (open in a browser, or serve via GitHub Pages)
+> 📊 **[Interactive walkthrough — how the system works ↗](https://namanguptaiitkgp.github.io/stock-tracker/docs/how-it-works.html)** — a plain-English tour of what it does, how it tracks large investors, and how the data is gathered.
 
 Two-tier AI architecture: **Gemini 2.5 Flash-Lite** for the daily bulk screen (cheap, high-volume), and a **provider-agnostic deep-analysis layer** (`app/ai/registry.py`) that routes to whatever the user has configured — Gemini Vertex by default, with Anthropic and OpenAI provider classes scaffolded for future activation. Daily morning brief at 8:30 AM IST. Single-admin in default config — schema is ready for invite-only multi-user (see *Multi-user* below).
 
