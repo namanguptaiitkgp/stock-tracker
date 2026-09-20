@@ -8,15 +8,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  /* ── Zerodha / Kite-inspired visual language (light only) ─────────── */
   :root {
     --bg:#ffffff; --bg-soft:#f9f9fb; --panel:#ffffff; --panel-2:#f7f8fa;
     --ink:#3c3c3c; --ink-strong:#1a1a1a; --ink-soft:#8b8b90;
     --line:#e8e8ec; --line-strong:#dcdce1;
     --orange:#ff5722; --orange-dark:#d8442b;
     --blue:#3b7bf6; --green:#279a53; --red:#e53935; --amber:#e08600; --purple:#6d4bd8; --teal:#0a94b0;
-    --radius:8px;
-    --shadow:0 1px 3px rgba(0,0,0,.06);
+    --radius:8px; --shadow:0 1px 3px rgba(0,0,0,.06);
+    --peek:74px;
   }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
@@ -24,6 +23,7 @@
     margin:0; background:var(--bg); color:var(--ink);
     font-family:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+    padding-bottom:var(--peek);
   }
   a { color:var(--blue); text-decoration:none; }
   a:hover { text-decoration:underline; }
@@ -78,45 +78,15 @@
   .signal-row:last-child { border-bottom:0; }
   .pill { font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:3px 9px; border-radius:99px; white-space:nowrap; flex:none; }
 
-  /* ── Drag-to-reveal technical section ─────────────────────────────── */
-  .tech-lead { text-align:center; margin-bottom:16px; }
-  .tech-lead .eyebrow { display:block; margin-bottom:4px; }
-  .tech-lead h2 { display:inline-block; }
-  .reveal { position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; --f:1; touch-action:pan-y; background:var(--bg); max-height:520px; transition:max-height .45s ease; }
-  .reveal.open { max-height:4000px; }
-  .reveal-content { padding:22px; }
-  .reveal-cover {
-    position:absolute; top:0; bottom:0; left:0; width:calc(var(--f) * 100%);
-    background:linear-gradient(120deg,#fff5f2 0%,#fdeee9 100%);
-    border-right:1px solid var(--line); overflow:hidden;
-    display:flex; align-items:center; justify-content:flex-end; padding-right:86px; z-index:2;
-  }
-  .reveal-hint { text-align:right; max-width:340px; }
-  .reveal-hint .k { color:var(--orange); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-  .reveal-hint .t { color:var(--ink-strong); font-size:20px; font-weight:700; letter-spacing:-.01em; margin:6px 0 4px; }
-  .reveal-hint .s { color:var(--ink-soft); font-size:14px; }
-  @media (max-width:520px){ .reveal-cover{ padding-right:74px; } .reveal-hint .t{ font-size:16px; } .reveal-hint .s{ font-size:12.5px; } }
-  .reveal-handle {
-    position:absolute; top:0; bottom:0; left:calc(var(--f) * 100%); transform:translateX(-50%);
-    width:56px; display:flex; align-items:center; justify-content:center; cursor:grab; z-index:4; touch-action:none;
-  }
-  .reveal-handle:active { cursor:grabbing; }
-  .reveal-handle .track-line { position:absolute; top:0; bottom:0; width:2px; background:var(--orange); opacity:.35; }
-  .reveal-handle .grip {
-    position:relative; width:46px; height:46px; border-radius:50%; background:var(--orange); color:#fff;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(255,87,34,.4);
-  }
-  .reveal-handle .grip svg { width:22px; height:22px; }
-  .reveal-handle .grip::after { content:""; position:absolute; width:60px; height:60px; border-radius:50%; border:2px solid var(--orange); opacity:.25; animation:pulse 2s ease-out infinite; }
-  @keyframes pulse { 0%{transform:scale(.75);opacity:.4;} 100%{transform:scale(1.15);opacity:0;} }
-  .reveal:not(.dragging) .reveal-cover, .reveal:not(.dragging) .reveal-handle { transition:width .3s ease, left .3s ease, opacity .3s ease; }
-  .reveal.open .reveal-cover { opacity:0; pointer-events:none; }
-  .reveal.open .reveal-handle { opacity:0; pointer-events:none; }
-  .reveal.open { touch-action:auto; }
+  .btn { display:inline-block; background:var(--blue); color:#fff; font-weight:600; font-size:14px; padding:10px 20px; border-radius:var(--radius); border:0; cursor:pointer; }
+  .btn:hover { text-decoration:none; filter:brightness(1.05); }
+  .pagefoot { padding:36px 0 40px; text-align:center; color:var(--ink-soft); font-size:13px; }
+  .disclaimer { max-width:640px; margin:14px auto 0; font-size:12.5px; }
 
-  .tech-head { display:flex; align-items:center; gap:10px; }
+  /* ── Technical content (lives inside the drawer) ──────────────────── */
+  .tech-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
   .tech-badge { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); border:1px solid var(--line); border-radius:99px; padding:3px 10px; }
-  .diagram { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:6px; }
+  .diagram { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
   @media (max-width:680px){ .diagram { grid-template-columns:repeat(2,1fr); } }
   .node { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 13px; cursor:pointer; text-align:left; transition:border-color .12s, box-shadow .12s; }
   .node:hover { border-color:var(--blue); box-shadow:var(--shadow); }
@@ -135,10 +105,37 @@
   .flow { display:none; } .flow.active { display:block; }
   code { background:var(--panel-2); border:1px solid var(--line); border-radius:4px; padding:1px 6px; font-size:12.5px; font-family:ui-monospace,"SF Mono",Menlo,monospace; color:var(--ink-strong); }
 
-  .btn { display:inline-block; background:var(--blue); color:#fff; font-weight:600; font-size:14px; padding:10px 20px; border-radius:var(--radius); border:0; cursor:pointer; }
-  .btn:hover { text-decoration:none; filter:brightness(1.05); }
-  footer { padding:40px 0 70px; text-align:center; color:var(--ink-soft); font-size:13px; }
-  .disclaimer { max-width:640px; margin:14px auto 0; font-size:12.5px; }
+  /* ── Fixed bottom drawer ──────────────────────────────────────────── */
+  .drawer-backdrop { position:fixed; inset:0; background:rgba(20,20,25,.32); opacity:0; pointer-events:none; transition:opacity .32s ease; z-index:45; }
+  .drawer-backdrop.show { opacity:1; pointer-events:auto; }
+  .drawer {
+    position:fixed; left:0; right:0; bottom:0; z-index:50; height:min(86vh,820px);
+    background:var(--panel); border-top:1px solid var(--line-strong);
+    border-radius:18px 18px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.16);
+    transform:translateY(calc(100% - var(--peek)));
+    display:flex; flex-direction:column; touch-action:none;
+  }
+  .drawer:not(.dragging) { transition:transform .34s cubic-bezier(.22,.61,.36,1); }
+  .drawer.open { transform:translateY(0); }
+  .drawer-handle {
+    position:relative; flex:none; height:var(--peek); display:flex; align-items:center; gap:14px;
+    padding:0 24px; cursor:grab; user-select:none; -webkit-user-select:none;
+    border-bottom:1px solid transparent;
+  }
+  .drawer.open .drawer-handle { border-bottom-color:var(--line); }
+  .drawer-handle:active { cursor:grabbing; }
+  .drawer-grip { position:absolute; left:50%; top:9px; transform:translateX(-50%); width:44px; height:5px; border-radius:99px; background:var(--line-strong); }
+  .drawer-handle .kmark { width:26px; height:26px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:7px; background:color-mix(in srgb,var(--orange) 14%,transparent); }
+  .drawer-handle .kmark svg { width:16px; height:16px; }
+  .drawer-handle .txt { display:flex; flex-direction:column; line-height:1.25; }
+  .drawer-handle .label { font-weight:600; color:var(--ink-strong); font-size:15px; }
+  .drawer-handle .hint { color:var(--ink-soft); font-size:12.5px; }
+  .drawer-handle .chev { margin-left:auto; color:var(--orange); display:flex; transition:transform .34s ease; }
+  .drawer.open .drawer-handle .chev { transform:rotate(180deg); }
+  .drawer-body { flex:1; overflow-y:auto; overflow-x:hidden; padding:14px 24px 40px; -webkit-overflow-scrolling:touch; }
+  .drawer-body .db-title { font-family:inherit; font-size:22px; font-weight:700; letter-spacing:-.02em; color:var(--ink-strong); margin:6px 0 2px; }
+  .drawer-body .db-sub { color:var(--ink-soft); font-size:14px; margin:0 0 22px; }
+  .drawer-body h3.dsec { font-size:17px; margin:26px 0 10px; }
 </style>
 </head>
 <body>
@@ -157,7 +154,7 @@
       <a href="#morning">Daily routine</a>
       <a href="#watchlist">Watchlist</a>
       <a href="#data">Where data comes from</a>
-      <a href="#tech">Technical</a>
+      <a href="#tech" id="navTech">Technical</a>
     </nav>
   </div>
 </div>
@@ -204,7 +201,7 @@
       </div>
       <div class="card">
         <div class="ic" style="background:color-mix(in srgb,var(--purple) 14%,transparent); color:var(--purple)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="10" width="6" height="10" rx="1.4"/><rect x="14.5" y="4" width="6" height="16" rx="1.4"/><path d="M6.5 10V7M17.5 4V4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="10" width="6" height="10" rx="1.4"/><rect x="14.5" y="4" width="6" height="16" rx="1.4"/></svg>
         </div>
         <h3>Peer companies</h3>
         <p>It automatically finds 6–8 genuine competitors for any stock, so you can compare like-for-like. It's tuned for Indian quirks — near-monopolies (IRCTC, CDSL), PSUs vs private, conglomerate arms.</p>
@@ -268,97 +265,89 @@
     </div>
   </section>
 
-  <!-- ══════════ TECHNICAL — drag to reveal ══════════ -->
-  <section id="tech">
-    <div class="tech-lead">
-      <span class="eyebrow">For the engineers</span>
-      <h2>Under the hood</h2>
-    </div>
-
-    <div class="reveal" id="reveal" style="--f:1">
-      <div class="reveal-content">
-        <div class="tech-head"><h3 style="margin:0;font-size:18px;">The components</h3><span class="tech-badge">click any box</span></div>
-        <div class="diagram" id="diagram" style="margin-top:12px;">
-          <button class="node wide" data-k="browser"><span class="name"><span class="dot" style="background:var(--blue)"></span>Browser — Next.js frontend</span><span class="tag">React 19 · App Router · Tailwind v4 · :3000</span></button>
-          <button class="node half" data-k="backend"><span class="name"><span class="dot" style="background:var(--green)"></span>FastAPI backend</span><span class="tag">REST API · JWT auth · :8000</span></button>
-          <button class="node half" data-k="celery"><span class="name"><span class="dot" style="background:var(--purple)"></span>Celery worker + beat</span><span class="tag">Scheduled &amp; async jobs</span></button>
-          <button class="node" data-k="db"><span class="name"><span class="dot" style="background:var(--teal)"></span>TimescaleDB</span><span class="tag">Postgres 16 + hypertables</span></button>
-          <button class="node" data-k="redis"><span class="name"><span class="dot" style="background:var(--red)"></span>Redis</span><span class="tag">Broker + cache</span></button>
-          <button class="node" data-k="kite"><span class="name"><span class="dot" style="background:var(--orange)"></span>Kite Connect</span><span class="tag">Market data + orders</span></button>
-          <button class="node" data-k="ai"><span class="name"><span class="dot" style="background:var(--purple)"></span>AI providers</span><span class="tag">Gemini · pluggable</span></button>
-        </div>
-        <div class="detail" id="detail"><div class="title">Pick a component above</div>The frontend talks only to the FastAPI backend; the backend fans out to the database, cache, broker APIs and AI providers. Long-running work is handed to Celery via Redis.</div>
-
-        <h3 style="margin:26px 0 10px;font-size:18px;">Data flows</h3>
-        <div class="tabs" id="tabs">
-          <button class="tab active" data-f="request">Live request</button>
-          <button class="tab" data-f="daily">Daily analysis</button>
-          <button class="tab" data-f="smart">Smart-money</button>
-          <button class="tab" data-f="aiflow">Two-tier AI</button>
-        </div>
-        <div class="flow active" data-f="request"><ol class="steps">
-          <li>Frontend calls the backend with the user's <strong>JWT</strong> attached.</li>
-          <li><strong>FastAPI</strong> validates the token, reads through <code>portfolio_cache</code> so concurrent widgets share one Kite fan-out.</li>
-          <li>Data comes from <strong>Kite</strong> (market) + cached scrapers (news, FII/DII, fundamentals).</li>
-          <li>Reads/writes hit <strong>TimescaleDB</strong>; hot values cached in <strong>Redis</strong>.</li>
-        </ol></div>
-        <div class="flow" data-f="daily"><ol class="steps">
-          <li><strong>Celery beat</strong> fires <code>run_daily_analysis</code> at 08:30 IST.</li>
-          <li>Worker iterates the universe per-symbol under <code>NullPool</code>.</li>
-          <li><strong>Gemini Flash-Lite</strong> screens each symbol and scores interest.</li>
-          <li>The shortlist routes to the deep-analysis provider; decisions surface on the <strong>Today</strong> page.</li>
-        </ol></div>
-        <div class="flow" data-f="smart"><ol class="steps">
-          <li>Ingest SEBI/NSE disclosures: insider trades, bulk/block deals, shareholding patterns, corporate announcements, FII/DII, AMFI MF activity.</li>
-          <li>Each run is <strong>audited + validated</strong>; client names normalized once for shark linkage.</li>
-          <li><code>rollup.py</code> produces <strong>conviction / flow / red-flag</strong> scores per <code>(symbol, window, as_of)</code>; composite derived.</li>
-          <li>Coverage diagnostic gates thin data to <em>NO_SIGNAL</em>; Action Summary → Accumulation / Distribution / Avoid.</li>
-        </ol></div>
-        <div class="flow" data-f="aiflow"><ol class="steps">
-          <li>Bulk screen on <strong>Gemini 2.5 Flash-Lite</strong>.</li>
-          <li>Deep analysis via a provider-agnostic registry (<code>app/ai/registry.py</code>) — Gemini Vertex default; Anthropic/OpenAI scaffolded.</li>
-          <li>Per-user daily budget cap; paid calls require explicit UI intent.</li>
-          <li>All provider credentials stored <strong>Fernet-encrypted at rest</strong>.</li>
-        </ol></div>
-
-        <h3 style="margin:26px 0 10px;font-size:18px;">Stack</h3>
-        <table>
-          <thead><tr><th>Layer</th><th>Choice</th></tr></thead>
-          <tbody>
-            <tr><td>Backend</td><td>FastAPI (Python 3.12), SQLAlchemy 2.0 async, Alembic</td></tr>
-            <tr><td>Frontend</td><td>Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind v4</td></tr>
-            <tr><td>Database</td><td>TimescaleDB (Postgres 16 + hypertables)</td></tr>
-            <tr><td>Cache / broker</td><td>Redis 7</td></tr>
-            <tr><td>Jobs</td><td>Celery worker + beat (Flower optional)</td></tr>
-            <tr><td>Broker</td><td>Zerodha Kite Connect</td></tr>
-            <tr><td>AI</td><td>Gemini 2.5 Flash-Lite (screen) · pluggable deep-analysis provider</td></tr>
-            <tr><td>Security</td><td>JWT auth · Fernet field encryption · rate limiting · risk engine + kill switch</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Cover + drag handle -->
-      <div class="reveal-cover" id="revealCover">
-        <div class="reveal-hint">
-          <div class="k">Curious how it's built?</div>
-          <div class="t">The technical details</div>
-          <div class="s">Drag the handle from right to left to reveal the architecture, data flows and stack.</div>
-        </div>
-      </div>
-      <div class="reveal-handle" id="revealHandle" role="slider" aria-label="Drag left to reveal technical details" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
-        <span class="track-line"></span>
-        <span class="grip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/><path d="M20 6l-6 6 6 6" opacity=".5"/></svg>
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <footer>
+  <div class="pagefoot">
     <a class="btn" href="https://github.com/namanguptaiitkgp/stock-tracker">View on GitHub →</a>
-    <p class="disclaimer">Personal project for educational use. This is not investment advice, and the app never places trades without your explicit action.</p>
-  </footer>
+    <p class="disclaimer">Personal project for educational use. This is not investment advice, and the app never places trades without your explicit action. <br><span style="color:var(--orange);font-weight:600">↓ Drag the bar at the bottom up to see how it's built.</span></p>
+  </div>
 
+</div>
+
+<!-- ══════════ Fixed bottom drawer — drag up to reveal technical details ══════════ -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle" id="drawerHandle">
+    <span class="drawer-grip"></span>
+    <span class="kmark"><svg viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(100,0) scale(-1,1)"><path d="M88,4 L30,50 L52,50 L88,36 Z" fill="#ff5722"/><path d="M30,50 L88,96 L88,64 L52,50 Z" fill="#d8442b"/></g></svg></span>
+    <span class="txt">
+      <span class="label">Under the hood</span>
+      <span class="hint">Drag up to reveal the technical build — architecture, data flows &amp; stack</span>
+    </span>
+    <span class="chev"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></span>
+  </div>
+
+  <div class="drawer-body">
+    <div class="db-title">Under the hood</div>
+    <div class="db-sub">For the engineers — everything above, in system terms.</div>
+
+    <div class="tech-head"><h3 class="dsec" style="margin:0;">The components</h3><span class="tech-badge">click any box</span></div>
+    <div class="diagram" id="diagram">
+      <button class="node wide" data-k="browser"><span class="name"><span class="dot" style="background:var(--blue)"></span>Browser — Next.js frontend</span><span class="tag">React 19 · App Router · Tailwind v4 · :3000</span></button>
+      <button class="node half" data-k="backend"><span class="name"><span class="dot" style="background:var(--green)"></span>FastAPI backend</span><span class="tag">REST API · JWT auth · :8000</span></button>
+      <button class="node half" data-k="celery"><span class="name"><span class="dot" style="background:var(--purple)"></span>Celery worker + beat</span><span class="tag">Scheduled &amp; async jobs</span></button>
+      <button class="node" data-k="db"><span class="name"><span class="dot" style="background:var(--teal)"></span>TimescaleDB</span><span class="tag">Postgres 16 + hypertables</span></button>
+      <button class="node" data-k="redis"><span class="name"><span class="dot" style="background:var(--red)"></span>Redis</span><span class="tag">Broker + cache</span></button>
+      <button class="node" data-k="kite"><span class="name"><span class="dot" style="background:var(--orange)"></span>Kite Connect</span><span class="tag">Market data + orders</span></button>
+      <button class="node" data-k="ai"><span class="name"><span class="dot" style="background:var(--purple)"></span>AI providers</span><span class="tag">Gemini · pluggable</span></button>
+    </div>
+    <div class="detail" id="detail"><div class="title">Pick a component above</div>The frontend talks only to the FastAPI backend; the backend fans out to the database, cache, broker APIs and AI providers. Long-running work is handed to Celery via Redis.</div>
+
+    <h3 class="dsec">Data flows</h3>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-f="request">Live request</button>
+      <button class="tab" data-f="daily">Daily analysis</button>
+      <button class="tab" data-f="smart">Smart-money</button>
+      <button class="tab" data-f="aiflow">Two-tier AI</button>
+    </div>
+    <div class="flow active" data-f="request"><ol class="steps">
+      <li>Frontend calls the backend with the user's <strong>JWT</strong> attached.</li>
+      <li><strong>FastAPI</strong> validates the token, reads through <code>portfolio_cache</code> so concurrent widgets share one Kite fan-out.</li>
+      <li>Data comes from <strong>Kite</strong> (market) + cached scrapers (news, FII/DII, fundamentals).</li>
+      <li>Reads/writes hit <strong>TimescaleDB</strong>; hot values cached in <strong>Redis</strong>.</li>
+    </ol></div>
+    <div class="flow" data-f="daily"><ol class="steps">
+      <li><strong>Celery beat</strong> fires <code>run_daily_analysis</code> at 08:30 IST.</li>
+      <li>Worker iterates the universe per-symbol under <code>NullPool</code>.</li>
+      <li><strong>Gemini Flash-Lite</strong> screens each symbol and scores interest.</li>
+      <li>The shortlist routes to the deep-analysis provider; decisions surface on the <strong>Today</strong> page.</li>
+    </ol></div>
+    <div class="flow" data-f="smart"><ol class="steps">
+      <li>Ingest SEBI/NSE disclosures: insider trades, bulk/block deals, shareholding patterns, corporate announcements, FII/DII, AMFI MF activity.</li>
+      <li>Each run is <strong>audited + validated</strong>; client names normalized once for shark linkage.</li>
+      <li><code>rollup.py</code> produces <strong>conviction / flow / red-flag</strong> scores per <code>(symbol, window, as_of)</code>; composite derived.</li>
+      <li>Coverage diagnostic gates thin data to <em>NO_SIGNAL</em>; Action Summary → Accumulation / Distribution / Avoid.</li>
+    </ol></div>
+    <div class="flow" data-f="aiflow"><ol class="steps">
+      <li>Bulk screen on <strong>Gemini 2.5 Flash-Lite</strong>.</li>
+      <li>Deep analysis via a provider-agnostic registry (<code>app/ai/registry.py</code>) — Gemini Vertex default; Anthropic/OpenAI scaffolded.</li>
+      <li>Per-user daily budget cap; paid calls require explicit UI intent.</li>
+      <li>All provider credentials stored <strong>Fernet-encrypted at rest</strong>.</li>
+    </ol></div>
+
+    <h3 class="dsec">Stack</h3>
+    <table>
+      <thead><tr><th>Layer</th><th>Choice</th></tr></thead>
+      <tbody>
+        <tr><td>Backend</td><td>FastAPI (Python 3.12), SQLAlchemy 2.0 async, Alembic</td></tr>
+        <tr><td>Frontend</td><td>Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind v4</td></tr>
+        <tr><td>Database</td><td>TimescaleDB (Postgres 16 + hypertables)</td></tr>
+        <tr><td>Cache / broker</td><td>Redis 7</td></tr>
+        <tr><td>Jobs</td><td>Celery worker + beat (Flower optional)</td></tr>
+        <tr><td>Broker</td><td>Zerodha Kite Connect</td></tr>
+        <tr><td>AI</td><td>Gemini 2.5 Flash-Lite (screen) · pluggable deep-analysis provider</td></tr>
+        <tr><td>Security</td><td>JWT auth · Fernet field encryption · rate limiting · risk engine + kill switch</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
@@ -387,31 +376,51 @@
     document.querySelectorAll('.flow').forEach(function(f){ f.classList.toggle('active', f.dataset.f===t.dataset.f); });
   });
 
-  // Drag-to-reveal
-  var reveal=document.getElementById('reveal');
-  var handle=document.getElementById('revealHandle');
-  var cover=document.getElementById('revealCover');
-  function getF(){ return parseFloat(getComputedStyle(reveal).getPropertyValue('--f'))||0; }
-  function setF(f){
-    f=Math.max(0,Math.min(1,f));
-    reveal.style.setProperty('--f',f);
-    reveal.classList.toggle('open', f<0.05);
-    handle.setAttribute('aria-valuenow', Math.round((1-f)*100));
+  // ── Draggable bottom drawer ─────────────────────────────────────────
+  var drawer=document.getElementById('drawer');
+  var handle=document.getElementById('drawerHandle');
+  var backdrop=document.getElementById('drawerBackdrop');
+  function peek(){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--peek'))||74; }
+  function drawerH(){ return drawer.getBoundingClientRect().height; }
+  function collapsedY(){ return Math.max(1, drawerH()-peek()); }
+  function currentTY(){ var m=new DOMMatrixReadOnly(getComputedStyle(drawer).transform); return m.m42; }
+  function applyY(y){
+    y=Math.max(0, Math.min(collapsedY(), y));
+    drawer.style.transform='translateY('+y+'px)';
+    backdrop.classList.toggle('show', (1 - y/collapsedY()) > 0.12);
   }
-  function fFromX(x){ var r=reveal.getBoundingClientRect(); return (x-r.left)/r.width; }
-  var dragging=false;
-  handle.addEventListener('pointerdown',function(e){ dragging=true; reveal.classList.add('dragging'); try{handle.setPointerCapture(e.pointerId);}catch(_){} e.preventDefault(); });
-  window.addEventListener('pointermove',function(e){ if(!dragging) return; setF(fFromX(e.clientX)); });
-  window.addEventListener('pointerup',function(){ if(!dragging) return; dragging=false; reveal.classList.remove('dragging'); var f=getF(); setF(f<0.45?0:1); });
-  // Tap the cover to reveal (mobile-friendly fallback)
-  cover.addEventListener('click',function(){ setF(0); });
-  // Keyboard
-  handle.addEventListener('keydown',function(e){
-    var f=getF();
-    if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ setF(f-0.2); e.preventDefault(); }
-    if(e.key==='ArrowRight'||e.key==='ArrowUp'){ setF(f+0.2); e.preventDefault(); }
-    if(e.key==='Enter'||e.key===' '){ setF(f>0.5?0:1); e.preventDefault(); }
+  function openDrawer(){ drawer.classList.remove('dragging'); drawer.style.transform=''; drawer.classList.add('open'); backdrop.classList.add('show'); }
+  function closeDrawer(){ drawer.classList.remove('dragging'); drawer.style.transform=''; drawer.classList.remove('open'); backdrop.classList.remove('show'); }
+
+  var dragging=false, startClientY=0, startTY=0, moved=false;
+  handle.addEventListener('pointerdown', function(e){
+    dragging=true; moved=false; startClientY=e.clientY;
+    startTY = drawer.classList.contains('open') ? 0 : currentTY();
+    drawer.classList.add('dragging');
+    try{ handle.setPointerCapture(e.pointerId); }catch(_){}
+    e.preventDefault();
   });
+  window.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    if(Math.abs(e.clientY-startClientY)>4) moved=true;
+    applyY(startTY + (e.clientY - startClientY));
+  });
+  window.addEventListener('pointerup', function(){
+    if(!dragging) return;
+    dragging=false;
+    var y=currentTY();
+    drawer.classList.remove('dragging');
+    if(!moved){ // treat as a tap → toggle
+      drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+      return;
+    }
+    // snap: revealed more than 40% → open, else collapse
+    (y < collapsedY()*0.6) ? openDrawer() : closeDrawer();
+  });
+
+  backdrop.addEventListener('click', closeDrawer);
+  document.getElementById('navTech').addEventListener('click', function(e){ e.preventDefault(); openDrawer(); });
+  window.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDrawer(); });
 </script>
 </body>
 </html>
