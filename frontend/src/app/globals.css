@@ -1,0 +1,345 @@
+@import "tailwindcss";
+
+/*
+ * Color system based on Apple Human Interface Guidelines (HIG).
+ * Uses semantic CSS custom properties so components use ONE set of classes.
+ * Light = default/primary.  Dark = opt-in via toggle.
+ *
+ * Reference — https://developer.apple.com/design/human-interface-guidelines/color
+ */
+
+/* ──────────────── Light mode (primary / default) ──────────────── */
+:root, html.light {
+  /* Backgrounds */
+  --bg-primary:    #FFFFFF;
+  --bg-secondary:  #F2F2F7;
+  --bg-tertiary:   #FFFFFF;
+  --bg-grouped:    #F2F2F7;
+  --bg-elevated:   #FFFFFF;
+
+  /* Text / Labels — all meet WCAG AA (4.5:1) on white */
+  --label-primary:    #1D1D1F;   /* Apple marketing black — 15.4:1 */
+  --label-secondary:  #48484A;   /* Apple systemGray — 7.8:1 */
+  --label-tertiary:   #6E6E73;   /* meets 4.6:1 on white — lowest safe */
+  --label-quaternary: #AEAEB2;   /* decorative only — NOT for readable text */;
+
+  /* Separators */
+  --separator:       #C6C6C8;
+  --separator-light: rgba(60,60,67,0.12);
+
+  /* System tints — Apple HIG light */
+  --system-blue:   #007AFF;
+  --system-green:  #34C759;
+  --system-red:    #FF3B30;
+  --system-orange: #FF9500;
+  --system-yellow: #FFCC00;
+  --system-purple: #AF52DE;
+  --system-teal:   #5AC8FA;
+
+  /* Fills (used for subtle backgrounds behind tinted content) */
+  --fill-blue:   rgba(0,122,255,0.08);
+  --fill-green:  rgba(52,199,89,0.08);
+  --fill-red:    rgba(255,59,48,0.08);
+  --fill-orange: rgba(255,149,0,0.08);
+  --fill-yellow: rgba(255,204,0,0.08);
+  --fill-purple: rgba(175,82,222,0.08);
+  --fill-gray:   rgba(60,60,67,0.05);
+
+  /* Shadows — subtle card elevation */
+  --shadow-xs: 0 1px 0 rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 0 rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-card: 0 1px 0 rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.06);
+  --shadow-md: 0 1px 0 rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 1px 0 rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08);
+
+  /* Verdict palette (Portfolio Brief design) */
+  --act:        #D72424;   /* red — ACT NOW */
+  --act-bg:     rgba(255,59,48,0.08);
+  --act-edge:   rgba(255,59,48,0.30);
+  --review:     #C77800;   /* amber — REVIEW */
+  --review-bg:  rgba(255,149,0,0.08);
+  --review-edge:rgba(255,149,0,0.30);
+  --buy:        #248A3D;   /* green — BUY */
+  --buy-bg:     rgba(52,199,89,0.08);
+  --buy-edge:   rgba(52,199,89,0.30);
+  --hold:       #6E6E73;   /* neutral gray */
+  --hold-bg:    rgba(60,60,67,0.05);
+  --hold-edge:  rgba(60,60,67,0.20);
+
+  /* Border-radius scale */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+
+  /* Aliases used by Portfolio Brief design (map to existing tokens) */
+  --rule:   var(--separator);
+  --rule-2: var(--separator-light);
+  --panel:   var(--bg-primary);
+  --panel-2: var(--bg-secondary);
+  --panel-3: var(--bg-tertiary);
+}
+
+/* ──────────────── Dark mode ──────────────── */
+html.dark {
+  --bg-primary:    #000000;
+  --bg-secondary:  #1C1C1E;
+  --bg-tertiary:   #2C2C2E;
+  --bg-grouped:    #000000;
+  --bg-elevated:   #1C1C1E;
+
+  --label-primary:    #FFFFFF;
+  --label-secondary:  rgba(235,235,245,0.60);
+  --label-tertiary:   rgba(235,235,245,0.30);
+  --label-quaternary: rgba(235,235,245,0.18);
+
+  --separator:       #38383A;
+  --separator-light: rgba(84,84,88,0.36);
+
+  --system-blue:   #0A84FF;
+  --system-green:  #30D158;
+  --system-red:    #FF453A;
+  --system-orange: #FF9F0A;
+  --system-yellow: #FFD60A;
+  --system-purple: #BF5AF2;
+  --system-teal:   #64D2FF;
+
+  --fill-blue:   rgba(10,132,255,0.15);
+  --fill-green:  rgba(48,209,88,0.15);
+  --fill-red:    rgba(255,69,58,0.15);
+  --fill-orange: rgba(255,159,10,0.15);
+  --fill-yellow: rgba(255,214,10,0.15);
+  --fill-purple: rgba(191,90,242,0.15);
+  --fill-gray:   rgba(235,235,245,0.08);
+
+  --shadow-xs:   0 1px 0 rgba(0,0,0,0.4);
+  --shadow-sm:   0 1px 0 rgba(255,255,255,0.03), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.03), 0 2px 6px rgba(0,0,0,0.3);
+  --shadow-md:   0 1px 0 rgba(255,255,255,0.03), 0 4px 14px rgba(0,0,0,0.35);
+  --shadow-lg:   0 1px 0 rgba(255,255,255,0.03), 0 12px 30px rgba(0,0,0,0.5);
+
+  --act:        #FF6B6B;
+  --act-bg:     rgba(255,69,58,0.18);
+  --act-edge:   rgba(255,69,58,0.40);
+  --review:     #F0B135;
+  --review-bg:  rgba(255,159,10,0.18);
+  --review-edge:rgba(255,159,10,0.40);
+  --buy:        #4ED887;
+  --buy-bg:     rgba(48,209,88,0.18);
+  --buy-edge:   rgba(48,209,88,0.40);
+  --hold:       #98989E;
+  --hold-bg:    rgba(235,235,245,0.08);
+  --hold-edge:  rgba(235,235,245,0.20);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif);
+}
+
+body {
+  background: var(--bg-grouped);
+  color: var(--label-primary);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ──────────────── Tailwind class remapping for light mode ──────────────── */
+/*
+ * The app was originally built dark-first using Tailwind's gray-900/800/700.
+ * These overrides remap them to Apple HIG values in light mode so we don't
+ * need to rewrite every component.
+ */
+
+/* --- Backgrounds --- */
+html.light .bg-gray-950        { background-color: var(--bg-grouped) !important; }
+html.light .bg-gray-900        { background-color: var(--bg-primary) !important; }
+html.light .bg-gray-800        { background-color: var(--bg-secondary) !important; }
+html.light .bg-gray-900\/90    { background-color: rgba(255,255,255,0.97) !important; }
+html.light .bg-gray-950\/30    { background-color: var(--bg-secondary) !important; }
+
+/* --- Borders --- */
+html.light .border-gray-800    { border-color: var(--separator-light) !important; }
+html.light .border-gray-700    { border-color: var(--separator) !important; }
+html.light .border-gray-800\/50 { border-color: var(--separator-light) !important; }
+
+/* --- Text hierarchy ---
+ * Role               Tailwind class    Light value   Contrast vs #FFF
+ * ─────────────────────────────────────────────────────────────────────
+ * Headings / body     text-white/100   #1D1D1F       15.4:1  ●
+ * Body / labels       text-gray-200    #1D1D1F       15.4:1  ●
+ * Secondary info      text-gray-300    #48484A        7.8:1  ●
+ * Descriptions        text-gray-400    #48484A        7.8:1  ●
+ * Captions / meta     text-gray-500    #6E6E73        4.6:1  ● (AA pass)
+ * Disabled / deco     text-gray-600    #6E6E73        4.6:1  ● (AA pass)
+ * ─────────────────────────────────────────────────────────────────────
+ * Nothing below 4.5:1. No invisible text.
+ */
+html.light .text-white    { color: var(--label-primary) !important; }
+html.light .text-gray-100 { color: var(--label-primary) !important; }
+html.light .text-gray-200 { color: var(--label-primary) !important; }
+html.light .text-gray-300 { color: var(--label-secondary) !important; }
+html.light .text-gray-400 { color: var(--label-secondary) !important; }
+html.light .text-gray-500 { color: var(--label-tertiary) !important; }
+html.light .text-gray-600 { color: var(--label-tertiary) !important; }
+
+/* White text stays white on colored action surfaces (Tailwind classes) */
+html.light [class*="bg-blue-6"],
+html.light [class*="bg-blue-7"],
+html.light [class*="bg-red-7"],
+html.light [class*="bg-green-7"],
+html.light [class*="bg-yellow-7"]           { color: #FFFFFF !important; }
+html.light .bg-blue-600 *,
+html.light .bg-blue-700 *                   { color: #FFFFFF !important; }
+/* For inline style backgrounds: use [style*="background"] as a safety net.
+   Any element with an inline backgroundColor containing a system color
+   and a text-white class should keep white text. */
+html.light [style*="backgroundColor"][style*="007AFF"],
+html.light [style*="background-color"][style*="007AFF"],
+html.light [style*="backgroundColor"][style*="007AFF"] *,
+html.light [style*="background-color"][style*="007AFF"] * { color: #FFFFFF !important; }
+
+/* --- Hovers --- */
+html.light .hover\:bg-gray-800:hover   { background-color: var(--fill-gray) !important; }
+html.light .hover\:bg-gray-700:hover   { background-color: var(--fill-gray) !important; }
+html.light .hover\:bg-gray-750:hover   { background-color: var(--fill-gray) !important; }
+html.light .hover\:bg-gray-600:hover   { background-color: var(--fill-gray) !important; }
+html.light .hover\:bg-gray-800\/30:hover { background-color: var(--fill-gray) !important; }
+html.light .hover\:text-white:hover    { color: var(--label-primary) !important; }
+
+/* --- System green (profit / success) --- */
+html.light .bg-green-900          { background-color: var(--fill-green) !important; }
+html.light .bg-green-950\/30      { background-color: var(--fill-green) !important; }
+html.light .bg-green-950\/20      { background-color: var(--fill-green) !important; }
+html.light .bg-green-900\/50      { background-color: var(--fill-green) !important; }
+html.light .border-green-700      { border-color: rgba(52,199,89,0.25) !important; }
+html.light .border-green-800\/50  { border-color: rgba(52,199,89,0.20) !important; }
+html.light .border-green-900\/50  { border-color: rgba(52,199,89,0.20) !important; }
+html.light .text-green-200        { color: #248A3D !important; }
+html.light .text-green-300        { color: #248A3D !important; }
+html.light .text-green-400        { color: var(--system-green) !important; }
+html.light .bg-green-700          { background-color: #248A3D !important; }
+
+/* --- System red (loss / error) --- */
+html.light .bg-red-900            { background-color: var(--fill-red) !important; }
+html.light .bg-red-950            { background-color: var(--fill-red) !important; }
+html.light .bg-red-950\/30        { background-color: var(--fill-red) !important; }
+html.light .bg-red-950\/20        { background-color: var(--fill-red) !important; }
+html.light .bg-red-900\/50        { background-color: var(--fill-red) !important; }
+html.light .bg-red-50             { background-color: var(--fill-red) !important; }
+html.light .border-red-700        { border-color: rgba(255,59,48,0.25) !important; }
+html.light .border-red-800        { border-color: rgba(255,59,48,0.25) !important; }
+html.light .border-red-900\/50    { border-color: rgba(255,59,48,0.20) !important; }
+html.light .border-red-900\/40    { border-color: rgba(255,59,48,0.20) !important; }
+html.light .border-red-200        { border-color: rgba(255,59,48,0.25) !important; }
+html.light .text-red-200          { color: #D70015 !important; }
+html.light .text-red-300          { color: #D70015 !important; }
+html.light .text-red-400          { color: var(--system-red) !important; }
+html.light .text-red-600          { color: var(--system-red) !important; }
+html.light .bg-red-700            { background-color: #D70015 !important; }
+
+/* --- System yellow (warning / watchful) --- */
+html.light .bg-yellow-900          { background-color: var(--fill-yellow) !important; }
+html.light .bg-yellow-950\/40      { background-color: var(--fill-yellow) !important; }
+html.light .border-yellow-700      { border-color: rgba(255,204,0,0.30) !important; }
+html.light .border-yellow-800\/40  { border-color: rgba(255,204,0,0.25) !important; }
+html.light .border-yellow-400      { border-color: rgba(255,204,0,0.40) !important; }
+html.light .text-yellow-200        { color: #A05A00 !important; }
+html.light .text-yellow-300        { color: #A05A00 !important; }
+html.light .text-yellow-400        { color: #C08800 !important; }
+html.light .text-yellow-600        { color: #A05A00 !important; }
+html.light .bg-yellow-700          { background-color: #C08800 !important; }
+html.light .bg-yellow-100          { background-color: var(--fill-yellow) !important; }
+
+/* --- System blue (accent / info / active) --- */
+html.light .bg-blue-600           { background-color: var(--system-blue) !important; }
+html.light .bg-blue-950\/30       { background-color: var(--fill-blue) !important; }
+html.light .bg-blue-950\/20       { background-color: var(--fill-blue) !important; }
+html.light .bg-blue-50            { background-color: var(--fill-blue) !important; }
+html.light .border-blue-800\/50   { border-color: rgba(0,122,255,0.20) !important; }
+html.light .border-blue-500       { border-color: var(--system-blue) !important; }
+html.light .text-blue-300         { color: var(--system-blue) !important; }
+html.light .text-blue-400         { color: var(--system-blue) !important; }
+html.light .text-blue-600         { color: var(--system-blue) !important; }
+html.light .text-blue-700         { color: #0040DD !important; }
+
+/* --- System orange (momentum badge) --- */
+html.light .bg-orange-900         { background-color: var(--fill-orange) !important; }
+html.light .border-orange-700     { border-color: rgba(255,149,0,0.30) !important; }
+html.light .text-orange-300       { color: #C45D00 !important; }
+
+/* --- System purple (quality badge) --- */
+html.light .bg-purple-900         { background-color: var(--fill-purple) !important; }
+html.light .border-purple-700     { border-color: rgba(175,82,222,0.30) !important; }
+html.light .text-purple-300       { color: #8944AB !important; }
+
+/* --- Inputs --- */
+html.light input, html.light textarea, html.light select {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--separator) !important;
+  color: var(--label-primary) !important;
+}
+html.light input::placeholder, html.light textarea::placeholder {
+  color: #AEAEB2 !important; /* Apple quaternary — intentionally lighter for placeholders */
+}
+html.light input:focus, html.light textarea:focus, html.light select:focus {
+  border-color: var(--system-blue) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.12) !important;
+}
+html.light input.bg-secondary-override,
+html.light input.bg-secondary-override:hover,
+html.light input.bg-secondary-override:focus,
+html.light input.bg-secondary-override:active {
+  background-color: var(--bg-secondary) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+html.light input.bg-secondary-override:-webkit-autofill,
+html.light input.bg-secondary-override:-webkit-autofill:hover,
+html.light input.bg-secondary-override:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-secondary) inset !important;
+  -webkit-text-fill-color: var(--label-primary) !important;
+  caret-color: var(--label-primary) !important;
+}
+
+/* --- Table heads --- */
+html.light thead tr { border-color: var(--separator-light) !important; }
+html.light th { color: var(--label-secondary) !important; }
+
+/* --- Cards in light: subtle shadow like Apple's grouped content --- */
+html.light .rounded-lg {
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* ──────────────── Dark mode: secondary-text contrast fix ──────────────── */
+/*
+ * The app was built dark-first on Tailwind's raw gray palette, but Tailwind's
+ * gray-500/600 FAIL WCAG AA on our dark surfaces (bg-gray-800 #1e2939 down to
+ * pure-black body):
+ *   text-gray-500  → 3.0–4.3 : 1   (used ~80×)   ❌
+ *   text-gray-600  → 1.9–2.8 : 1   (used ~30×)   ❌  (near-invisible)
+ * These remaps lift every secondary/caption tier onto Apple HIG dark grays,
+ * all ≥ 4.5 : 1 on the darkest card in use, while preserving the intended
+ * 300 > 400 > 500 > 600 brightness hierarchy.
+ *
+ *   Role              Class          Value      Contrast vs #1e2939 (worst card)
+ *   ────────────────────────────────────────────────────────────────────────
+ *   Secondary label   text-gray-400  #C7C7CC     8.7 : 1   ●
+ *   Tertiary / meta   text-gray-500  #A1A1A6     5.7 : 1   ●  (was ❌)
+ *   Caption / dim     text-gray-600  #8E8E93     4.5 : 1   ●  (was ❌)
+ *   text-gray-300 left as-is (#d1d5db, 10 : 1) — stays the brightest tier.
+ */
+html.dark .text-gray-400 { color: #C7C7CC !important; }
+html.dark .text-gray-500 { color: #A1A1A6 !important; }
+html.dark .text-gray-600 { color: #8E8E93 !important; }
+
+/* Placeholders: readable but clearly secondary (Apple systemGray). */
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #8E8E93 !important; }
+
+/* Table headers use gray-400/500 for labels — same lift applies via the
+ * rules above; nothing extra needed. */

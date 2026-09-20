@@ -1,0 +1,119 @@
+# Production compose. Diffs from docker-compose.yml:
+#   - Backend uses backend.prod.Dockerfile (multi-worker uvicorn, no reload).
+#   - No source volume mounts — image is the source of truth.
+#   - Healthchecks on every long-running service.
+#   - Flower lives in the `monitoring` profile (opt-in: `--profile monitoring`).
+#   - restart: always so a crash doesn't take the deploy down silently.
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    restart: always
+    environment:
+      POSTGRES_USER: algotrader
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: algotrader
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U algotrader -d algotrader"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.prod.Dockerfile
+    restart: always
+    env_file: .env
+    environment:
+      APP_ENV: production
+      WORKERS: ${BACKEND_WORKERS:-4}
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.prod.Dockerfile
+    restart: always
+    env_file: .env
+    environment:
+      APP_ENV: production
+      CELERY_NULL_POOL: "1"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.celery_app worker --loglevel=info --queues=default,analysis,data --concurrency=${WORKER_CONCURRENCY:-4}
+
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.prod.Dockerfile
+    restart: always
+    env_file: .env
+    environment:
+      APP_ENV: production
+      CELERY_NULL_POOL: "1"
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.prod.Dockerfile
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL}
+      NEXT_PUBLIC_WS_URL: ${PUBLIC_WS_URL}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  flower:
+    profiles: ["monitoring"]
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.prod.Dockerfile
+    restart: always
+    env_file: .env
+    expose:
+      - "5555"
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.celery_app flower --port=5555 --basic_auth=${FLOWER_BASIC_AUTH:-admin:admin}
+
+volumes:
+  timescale_data:
+  redis_data:

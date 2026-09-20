@@ -1,0 +1,122 @@
+# Oracle Cloud Always Free (ARM64) compose.
+# Based on docker-compose.prod.yml with these changes:
+#   - Ports bound to 127.0.0.1 (Nginx on host handles external traffic + SSL).
+#   - env_file points to .env.oci.
+#   - No Flower service (use `docker compose exec` for ad-hoc monitoring).
+#   - TimescaleDB data stored on the block volume via named volume driver_opts.
+#   - Log rotation: each container is capped at 3 × 20MB = 60MB total. Stops
+#     the 30GB root volume from filling up with celery/news debug spam.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "3"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    restart: always
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: algotrader
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: algotrader
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U algotrader -d algotrader"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    logging: *default-logging
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.prod.Dockerfile
+    restart: always
+    logging: *default-logging
+    env_file: .env.oci
+    environment:
+      APP_ENV: production
+      WORKERS: ${BACKEND_WORKERS:-4}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.prod.Dockerfile
+    restart: always
+    logging: *default-logging
+    env_file: .env.oci
+    environment:
+      APP_ENV: production
+      CELERY_NULL_POOL: "1"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.celery_app worker --loglevel=info --queues=default,analysis,data --concurrency=${WORKER_CONCURRENCY:-4}
+
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.prod.Dockerfile
+    restart: always
+    logging: *default-logging
+    env_file: .env.oci
+    environment:
+      APP_ENV: production
+      CELERY_NULL_POOL: "1"
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.prod.Dockerfile
+      args:
+        # Next.js bakes NEXT_PUBLIC_* into the client bundle at BUILD time —
+        # runtime env vars don't reach the browser. Pass them as build args.
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL}
+        NEXT_PUBLIC_WS_URL: ${PUBLIC_WS_URL}
+    restart: always
+    logging: *default-logging
+    environment:
+      NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL}
+      NEXT_PUBLIC_WS_URL: ${PUBLIC_WS_URL}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  timescale_data:
+  redis_data:

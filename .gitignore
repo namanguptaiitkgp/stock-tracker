@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+.next/
+out/
+.swc/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.oci
+
+# Service account credentials
+service_account.json
+*credentials*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Claude Code (agent state, worktrees, local settings — ignore contents, not dir)
+.claude/*
+!.claude/commands/
+!.claude/skills/
+
+# Docker
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+
+# Alembic
+alembic/versions/*.pyc
+
+# Local design-handoff drops (HTML mockups + reference projects). These are
+# scratch / inspiration material — the implementation lives under frontend/.
+ceat-detail-mockup.html
+payments */
+payments?/
+
+# Equity research data (downloaded PDFs + generated reports)
+data/filings/
+data/reports/
+
+# Local research artifacts (xlsx/csv from manual analysis)
+*.xlsx
+*.~lock*.xlsx#
+CF-Shareholding-Pattern-*.csv
+*Holding Pattern History*.csv
+SHP_*.xml
+sector_benchmarks_india.md
+stock-card-backend-spec.md
+files (*)/
+danlaw_card_simple_section_names.html
+
+# Local agent skills/scratch — out-of-repo by default
+.claude/
+
+# Keys / certs
+*.pem
+*.key

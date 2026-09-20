@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Auto-push every commit to the current branch's upstream on origin.
+# Skip with: NO_AUTO_PUSH=1 git commit ...
+# Install with: make install-hooks
+set -u
+
+if [ "${NO_AUTO_PUSH:-0}" = "1" ]; then
+  echo "[post-commit] NO_AUTO_PUSH=1 — skipping auto-push"
+  exit 0
+fi
+
+branch="$(git symbolic-ref --short HEAD 2>/dev/null || true)"
+if [ -z "$branch" ] || [ "$branch" = "HEAD" ]; then
+  echo "[post-commit] detached HEAD — skipping auto-push"
+  exit 0
+fi
+
+# Avoid recursion / nested runs from rebases, cherry-picks, merges
+if [ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ] \
+   || [ -f "$(git rev-parse --git-dir)/rebase-merge/head-name" ] \
+   || [ -f "$(git rev-parse --git-dir)/rebase-apply/head-name" ] \
+   || [ -f "$(git rev-parse --git-dir)/CHERRY_PICK_HEAD" ]; then
+  echo "[post-commit] mid-merge/rebase/cherry-pick — skipping auto-push"
+  exit 0
+fi
+
+echo "[post-commit] pushing $branch to origin..."
+if git push origin "$branch"; then
+  echo "[post-commit] pushed."
+else
+  echo "[post-commit] push failed (commit is local). Resolve, then: git push origin $branch" >&2
+fi
+exit 0

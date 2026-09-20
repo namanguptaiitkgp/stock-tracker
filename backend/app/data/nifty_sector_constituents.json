@@ -1,0 +1,103 @@
+{
+  "_comment": "Nifty sector index constituents → canonical sector. Refresh quarterly after Nifty reconstitution (typically end-Mar/Jun/Sep/Dec). Source: NSE indices factsheets at niftyindices.com. The `sector` field for each index MUST match a key in INDEX_TO_SECTOR in screener_presets.py.",
+  "as_of": "2026-04-30",
+  "indices": [
+    {
+      "slug": "nifty_it",
+      "sector": "Technology",
+      "symbols": [
+        "TCS", "INFY", "HCLTECH", "WIPRO", "TECHM",
+        "LTIM", "PERSISTENT", "COFORGE", "MPHASIS", "OFSS"
+      ]
+    },
+    {
+      "slug": "nifty_bank",
+      "sector": "Financial Services",
+      "symbols": [
+        "HDFCBANK", "ICICIBANK", "SBIN", "KOTAKBANK", "AXISBANK",
+        "INDUSINDBK", "BANKBARODA", "PNB", "FEDERALBNK", "AUBANK",
+        "IDFCFIRSTB", "BANDHANBNK"
+      ]
+    },
+    {
+      "slug": "nifty_pvt_bank",
+      "sector": "Financial Services",
+      "symbols": [
+        "HDFCBANK", "ICICIBANK", "KOTAKBANK", "AXISBANK", "INDUSINDBK",
+        "FEDERALBNK", "AUBANK", "IDFCFIRSTB", "RBLBANK", "BANDHANBNK"
+      ]
+    },
+    {
+      "slug": "nifty_psu_bank",
+      "sector": "Financial Services",
+      "symbols": [
+        "SBIN", "BANKBARODA", "PNB", "CANBK", "UNIONBANK",
+        "BANKINDIA", "INDIANB", "IOB", "UCOBANK", "CENTRALBK",
+        "MAHABANK", "PSB"
+      ]
+    },
+    {
+      "slug": "nifty_auto",
+      "sector": "Consumer Cyclical",
+      "symbols": [
+        "MARUTI", "M&M", "TATAMOTORS", "BAJAJ-AUTO", "EICHERMOT",
+        "HEROMOTOCO", "ASHOKLEY", "TVSMOTOR", "BHARATFORG", "MOTHERSON",
+        "BALKRISIND", "BOSCHLTD", "EXIDEIND", "MRF", "TIINDIA",
+        "APOLLOTYRE"
+      ]
+    },
+    {
+      "slug": "nifty_fmcg",
+      "sector": "Consumer Defensive",
+      "symbols": [
+        "HINDUNILVR", "ITC", "NESTLEIND", "BRITANNIA", "DABUR",
+        "MARICO", "GODREJCP", "COLPAL", "TATACONSUM", "VBL",
+        "RADICO", "EMAMILTD", "PATANJALI", "UNITDSPR", "UBL"
+      ]
+    },
+    {
+      "slug": "nifty_pharma",
+      "sector": "Healthcare",
+      "symbols": [
+        "SUNPHARMA", "DRREDDY", "CIPLA", "DIVISLAB", "LUPIN",
+        "AUROPHARMA", "TORNTPHARM", "GLENMARK", "ALKEM", "BIOCON",
+        "ZYDUSLIFE", "MANKIND", "ABBOTINDIA", "GLAND", "IPCALAB",
+        "AJANTPHARM", "LAURUSLABS", "GRANULES", "NATCOPHARM"
+      ]
+    },
+    {
+      "slug": "nifty_energy",
+      "sector": "Energy",
+      "symbols": [
+        "RELIANCE", "ONGC", "BPCL", "IOC", "GAIL",
+        "NTPC", "POWERGRID", "COALINDIA", "TATAPOWER", "ADANIPOWER",
+        "ADANIGREEN", "ADANIENSOL", "JSWENERGY"
+      ]
+    },
+    {
+      "slug": "nifty_metal",
+      "sector": "Basic Materials",
+      "symbols": [
+        "TATASTEEL", "JSWSTEEL", "HINDALCO", "JINDALSTEL", "VEDL",
+        "NMDC", "SAIL", "HINDZINC", "NATIONALUM", "RATNAMANI",
+        "APLAPOLLO", "JINDALSAW", "MOIL", "WELCORP", "ADANIENT"
+      ]
+    },
+    {
+      "slug": "nifty_realty",
+      "sector": "Real Estate",
+      "symbols": [
+        "DLF", "OBEROIRLTY", "GODREJPROP", "PHOENIXLTD", "PRESTIGE",
+        "BRIGADE", "SOBHA", "MAHLIFE", "LODHA", "SUNTECK"
+      ]
+    },
+    {
+      "slug": "nifty_media",
+      "sector": "Communication Services",
+      "symbols": [
+        "ZEEL", "SUNTV", "PVRINOX", "NETWORK18", "TV18BRDCST",
+        "TIPSINDLTD", "SAREGAMA", "NAZARA", "ENIL", "DBCORP"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>stock-tracker — How it works</title>
+<style>
+  :root {
+    --bg: #f2f2f7; --panel: #ffffff; --panel-2: #f7f7fa;
+    --ink: #1d1d1f; --ink-2: #48484a; --ink-3: #6e6e73;
+    --line: rgba(60,60,67,0.14); --accent: #007aff; --accent-ink:#fff;
+    --green:#248a3d; --amber:#c77800; --red:#d70015; --purple:#8944ab; --teal:#0a84a8;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.05);
+    --radius: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#000; --panel:#1c1c1e; --panel-2:#2c2c2e;
+      --ink:#fff; --ink-2:#c7c7cc; --ink-3:#a1a1a6;
+      --line: rgba(84,84,88,0.4); --accent:#0a84ff;
+      --green:#4ed887; --amber:#f0b135; --red:#ff6b6b; --purple:#bf5af2; --teal:#64d2ff;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 30px rgba(0,0,0,.5);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 48px 20px 80px; }
+  header.hero { text-align: center; margin-bottom: 40px; }
+  .hero h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 700; letter-spacing: -0.03em; margin: 0 0 12px; }
+  .hero p { font-size: 17px; color: var(--ink-2); max-width: 620px; margin: 0 auto; }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:20px; }
+  .badge { font-size:12px; font-weight:600; padding:5px 11px; border-radius:99px; background:var(--panel); border:1px solid var(--line); color:var(--ink-2); }
+  h2.section { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 700; margin: 56px 0 16px; }
+  .lead { color: var(--ink-2); font-size: 15px; margin: -8px 0 20px; }
+
+  /* Architecture diagram */
+  .diagram { display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 720px){ .diagram { grid-template-columns: repeat(2,1fr); } }
+  .node {
+    background: var(--panel); border:1px solid var(--line); border-radius: 14px;
+    padding: 16px 14px; cursor: pointer; text-align:left; transition: transform .12s, border-color .12s, box-shadow .12s;
+    position: relative; overflow: hidden;
+  }
+  .node:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--accent); }
+  .node.active { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .node .dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:7px; }
+  .node .name { font-weight:650; font-size:14px; letter-spacing:-.01em; }
+  .node .tag { font-size:11px; color:var(--ink-3); margin-top:4px; }
+  .node.wide { grid-column: span 4; } @media(max-width:720px){ .node.wide{ grid-column: span 2; } }
+  .node.half { grid-column: span 2; }
+  .detail {
+    margin-top:14px; background: var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding: 18px 20px; min-height: 74px; font-size:14.5px; color: var(--ink-2);
+  }
+  .detail strong { color: var(--ink); }
+  .detail .title { font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+
+  /* Tabs */
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+  .tab { font-size:13px; font-weight:600; padding:8px 15px; border-radius:99px; border:1px solid var(--line);
+    background:var(--panel); color:var(--ink-3); cursor:pointer; }
+  .tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .flow { display:none; }
+  .flow.active { display:block; }
+  ol.steps { list-style:none; counter-reset: s; padding:0; margin:0; }
+  ol.steps li { counter-increment:s; position:relative; padding:14px 16px 14px 54px; background:var(--panel);
+    border:1px solid var(--line); border-radius:12px; margin-bottom:10px; font-size:14.5px; color:var(--ink-2); }
+  ol.steps li::before { content: counter(s); position:absolute; left:14px; top:13px; width:26px; height:26px;
+    background:var(--accent); color:var(--accent-ink); border-radius:50%; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center; }
+  ol.steps li strong { color: var(--ink); }
+  code { background: var(--panel-2); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:12.5px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--ink); }
+
+  /* Stack table */
+  table { width:100%; border-collapse: collapse; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  th, td { text-align:left; padding:11px 16px; font-size:14px; border-bottom:1px solid var(--line); }
+  th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-3); }
+  tr:last-child td { border-bottom:0; }
+  td:first-child { font-weight:600; color:var(--ink); white-space:nowrap; }
+  td:last-child { color: var(--ink-2); }
+
+  .cards { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; }
+  @media(max-width:720px){ .cards{ grid-template-columns:1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; }
+  .card h3 { margin:0 0 6px; font-size:15px; }
+  .card p { margin:0; font-size:13.5px; color:var(--ink-2); }
+  .card .k { font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin-bottom:8px; }
+  footer { text-align:center; margin-top:64px; color:var(--ink-3); font-size:13px; }
+  footer a { color: var(--accent); text-decoration:none; }
+  .note { font-size:12.5px; color:var(--ink-3); margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>stock-tracker</h1>
+    <p>A personal, AI-assisted trading &amp; research platform for Indian equities — built on Zerodha Kite Connect, with a two-tier AI layer and a three-stream “smart-money” signal engine.</p>
+    <div class="badges">
+      <span class="badge">FastAPI · Python 3.12</span>
+      <span class="badge">Next.js 16 · React 19</span>
+      <span class="badge">TimescaleDB</span>
+      <span class="badge">Celery + Redis</span>
+      <span class="badge">Gemini AI</span>
+    </div>
+  </header>
+
+  <h2 class="section">The system at a glance</h2>
+  <p class="lead">Click any component to see what it does.</p>
+  <div class="diagram" id="diagram">
+    <button class="node wide" data-k="browser">
+      <span class="name"><span class="dot" style="background:var(--accent)"></span>Browser — Next.js frontend</span>
+      <span class="tag">React 19 · App Router · Tailwind v4 · :3000</span>
+    </button>
+
+    <button class="node half" data-k="backend">
+      <span class="name"><span class="dot" style="background:var(--green)"></span>FastAPI backend</span>
+      <span class="tag">REST API · JWT auth · :8000</span>
+    </button>
+    <button class="node half" data-k="celery">
+      <span class="name"><span class="dot" style="background:var(--purple)"></span>Celery worker + beat</span>
+      <span class="tag">Scheduled &amp; async jobs</span>
+    </button>
+
+    <button class="node" data-k="db">
+      <span class="name"><span class="dot" style="background:var(--teal)"></span>TimescaleDB</span>
+      <span class="tag">Postgres 16 + hypertables</span>
+    </button>
+    <button class="node" data-k="redis">
+      <span class="name"><span class="dot" style="background:var(--red)"></span>Redis</span>
+      <span class="tag">Broker + cache</span>
+    </button>
+    <button class="node" data-k="kite">
+      <span class="name"><span class="dot" style="background:var(--amber)"></span>Kite Connect</span>
+      <span class="tag">Market data + orders</span>
+    </button>
+    <button class="node" data-k="ai">
+      <span class="name"><span class="dot" style="background:var(--purple)"></span>AI providers</span>
+      <span class="tag">Gemini · pluggable</span>
+    </button>
+  </div>
+  <div class="detail" id="detail">
+    <div class="title">Pick a component above</div>
+    Each box is a running service. The frontend talks only to the FastAPI backend; the backend fans out to the database, cache, broker APIs and AI providers. Long-running work is handed to Celery via Redis.
+  </div>
+
+  <h2 class="section">How the data flows</h2>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-f="request">Live request</button>
+    <button class="tab" data-f="daily">Daily analysis (08:30 IST)</button>
+    <button class="tab" data-f="smart">Smart-money signals</button>
+    <button class="tab" data-f="ai">Two-tier AI</button>
+  </div>
+
+  <div class="flow active" data-f="request">
+    <ol class="steps">
+      <li>You open a page. The <strong>Next.js frontend</strong> calls the backend with your <strong>JWT</strong> attached.</li>
+      <li><strong>FastAPI</strong> validates the token, then reads through <code>portfolio_cache</code> so concurrent dashboard widgets share one fan-out to Kite.</li>
+      <li>Market data comes from <strong>Kite Connect</strong>; fundamentals, news and FII/DII flows come from cached scrapers.</li>
+      <li>Results are read/written to <strong>TimescaleDB</strong> and hot values cached in <strong>Redis</strong>.</li>
+      <li>The response returns to the browser — no direct DB or broker access from the client.</li>
+    </ol>
+  </div>
+
+  <div class="flow" data-f="daily">
+    <ol class="steps">
+      <li><strong>Celery beat</strong> fires <code>run_daily_analysis</code> at 08:30 IST.</li>
+      <li>The worker pulls every active watchlist symbol.</li>
+      <li><strong>Gemini Flash-Lite</strong> screens each symbol — price action + fundamentals + latest news + smart-money snapshot — and assigns an interest score (cheap, high-volume tier).</li>
+      <li>A curated shortlist is routed to the <strong>deep-analysis provider</strong> for a full write-up.</li>
+      <li>Decisions land in the DB and surface on the <strong>“Today” morning brief</strong> — news, FII/DII, MF activity, portfolio and recommendations.</li>
+    </ol>
+  </div>
+
+  <div class="flow" data-f="smart">
+    <p class="lead">The smart-money subsystem scores both new candidates and existing holdings on three independent streams, then derives a composite.</p>
+    <div class="cards">
+      <div class="card"><div class="k" style="color:var(--green)">Conviction</div><h3>Who's buying with intent</h3><p>Promoter purchases, insider buys, and institutional accumulation — filtered to exclude intra-group transfers that would otherwise score as both buy and sell.</p></div>
+      <div class="card"><div class="k" style="color:var(--accent)">Flow</div><h3>Where the money moves</h3><p>Bulk/block deals, FII/DII activity, mutual-fund buy/sell, and shareholding-pattern shifts across configurable windows.</p></div>
+      <div class="card"><div class="k" style="color:var(--red)">Red flag</div><h3>What to watch out for</h3><p>Promoter selling, pledge changes, and governance signals. Coverage gating returns <em>NO_SIGNAL</em> rather than a misleading direction when data is sparse.</p></div>
+    </div>
+    <p class="note">Ingestion of each third-party disclosure is audited and validated per run; client names are normalized once so named-investor linkage stays consistent.</p>
+  </div>
+
+  <div class="flow" data-f="ai">
+    <ol class="steps">
+      <li><strong>Bulk screen</strong> runs on <strong>Gemini 2.5 Flash-Lite</strong> — cheap enough to score every watchlist symbol daily.</li>
+      <li><strong>Deep analysis</strong> goes through a <strong>provider-agnostic registry</strong> (<code>app/ai/registry.py</code>): call sites ask for a provider by purpose, never a vendor SDK.</li>
+      <li>Gemini Vertex is the default deep provider; Anthropic and OpenAI classes are scaffolded and switchable per-user in Settings.</li>
+      <li>Spend is bounded by a per-user daily budget cap, and paid calls require explicit user intent in the UI.</li>
+      <li>All provider credentials are stored <strong>Fernet-encrypted at rest</strong>.</li>
+    </ol>
+  </div>
+
+  <h2 class="section">The stack</h2>
+  <table>
+    <thead><tr><th>Layer</th><th>Choice</th></tr></thead>
+    <tbody>
+      <tr><td>Backend</td><td>FastAPI (Python 3.12), SQLAlchemy 2.0 async, Alembic</td></tr>
+      <tr><td>Frontend</td><td>Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind v4</td></tr>
+      <tr><td>Database</td><td>TimescaleDB (Postgres 16 + hypertables for OHLCV)</td></tr>
+      <tr><td>Cache / broker</td><td>Redis 7</td></tr>
+      <tr><td>Jobs</td><td>Celery worker + beat (Flower optional)</td></tr>
+      <tr><td>Broker</td><td>Zerodha Kite Connect</td></tr>
+      <tr><td>AI</td><td>Gemini 2.5 Flash-Lite (screen) · pluggable deep-analysis provider</td></tr>
+      <tr><td>Security</td><td>JWT auth · Fernet field encryption · rate limiting · risk engine + kill switch</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section">Safety rails</h2>
+  <div class="cards">
+    <div class="card"><h3>Risk engine</h3><p>Order placement is guarded by position-size, exposure, daily-loss and order-count limits, with a hard kill switch.</p></div>
+    <div class="card"><h3>Cost caps</h3><p>Bulk work runs on the cheap model; deep-analysis spend is bounded by a per-user daily budget.</p></div>
+    <div class="card"><h3>Encryption at rest</h3><p>Kite, Gemini, Anthropic and OpenAI credentials are stored Fernet-encrypted, never in plaintext.</p></div>
+  </div>
+
+  <footer>
+    <p>Personal project · <a href="https://github.com/namanguptaiitkgp/stock-tracker">github.com/namanguptaiitkgp/stock-tracker</a></p>
+    <p class="note">Not investment advice. Educational / personal use.</p>
+  </footer>
+
+</div>
+
+<script>
+  var DETAILS = {
+    browser: { t: "Browser — Next.js frontend", c: "The only thing you interact with. Server components by default, client components where state is needed. It attaches your <strong>JWT</strong> to every API call and never touches the database or broker directly." },
+    backend: { t: "FastAPI backend", c: "The single gateway. Handles auth, validates requests, enforces the <strong>risk engine</strong>, and fans out to the database, Kite, AI providers and Redis. All Kite reads funnel through a shared cache layer." },
+    celery: { t: "Celery worker + beat", c: "Runs everything that shouldn't block a request: the 08:30 daily analysis, morning news scan, instrument sync, and smart-money ingestion. <strong>Beat</strong> schedules; the <strong>worker</strong> executes." },
+    db: { t: "TimescaleDB", c: "Postgres 16 with <strong>hypertables</strong> for time-series OHLCV. Stores users, watchlists, strategies, decisions and the full smart-money dataset. Sensitive credential columns are encrypted." },
+    redis: { t: "Redis", c: "Doubles as the <strong>Celery broker</strong> (task queues: default, analysis, data) and the API <strong>cache</strong> for hot values so repeated dashboard reads stay fast." },
+    kite: { t: "Zerodha Kite Connect", c: "The broker integration — live market data, quotes, historical candles, holdings and order placement. Access tokens refresh daily and are stored encrypted." },
+    ai: { t: "AI providers", c: "A two-tier, pluggable layer. <strong>Gemini Flash-Lite</strong> does the cheap bulk screen; a provider registry routes deep analysis to Gemini Vertex (default), with Anthropic/OpenAI scaffolded." }
+  };
+  var diagram = document.getElementById('diagram');
+  var detail = document.getElementById('detail');
+  diagram.addEventListener('click', function(e){
+    var node = e.target.closest('.node'); if(!node) return;
+    diagram.querySelectorAll('.node').forEach(function(n){ n.classList.remove('active'); });
+    node.classList.add('active');
+    var d = DETAILS[node.dataset.k];
+    detail.innerHTML = '<div class="title">'+ d.t +'</div>' + d.c;
+  });
+
+  var tabs = document.getElementById('tabs');
+  tabs.addEventListener('click', function(e){
+    var tab = e.target.closest('.tab'); if(!tab) return;
+    tabs.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelectorAll('.flow').forEach(function(f){
+      f.classList.toggle('active', f.dataset.f === tab.dataset.f);
+    });
+  });
+</script>
+</body>
+</html>
