@@ -19,16 +19,6 @@
     --radius:6px;
     --shadow:0 1px 3px rgba(0,0,0,.05);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:#16181d; --bg-soft:#1b1e24; --panel:#1f232a; --panel-2:#22262e;
-      --ink:#c4c8cf; --ink-strong:#f2f3f5; --ink-soft:#8a9099;
-      --line:#2c313a; --line-strong:#39404a;
-      --orange:#ff6b3d; --blue:#5b93ff;
-      --green:#5cc46a; --red:#f16a63; --amber:#f0b135; --purple:#9b86ff; --teal:#3fc3dd;
-      --shadow:0 1px 3px rgba(0,0,0,.4);
-    }
-  }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body {
@@ -46,8 +36,8 @@
     border-bottom:1px solid var(--line); backdrop-filter:saturate(1.2) blur(6px);
   }
   .topbar .row { display:flex; align-items:center; gap:22px; height:56px; max-width:920px; margin:0 auto; padding:0 20px; }
-  .brand { display:flex; align-items:center; gap:9px; font-weight:600; color:var(--ink-strong); font-size:16px; }
-  .brand .kite { width:16px; height:16px; background:var(--orange); border-radius:3px; transform:rotate(45deg); flex:none; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:600; color:var(--ink-strong); font-size:16px; }
+  .brand .kite { width:22px; height:22px; flex:none; display:block; }
   .navlinks { display:flex; gap:20px; margin-left:auto; }
   .navlinks a { color:var(--ink-soft); font-size:14px; font-weight:500; }
   .navlinks a:hover { color:var(--orange); text-decoration:none; }
@@ -56,7 +46,10 @@
   /* Hero */
   header.hero { padding:56px 0 20px; border-bottom:1px solid var(--line); }
   .eyebrow { color:var(--orange); font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; }
-  .hero h1 { font-size:clamp(30px,5.2vw,44px); font-weight:700; letter-spacing:-0.025em; color:var(--ink-strong); margin:10px 0 14px; }
+  .hero h1 { font-size:clamp(30px,5.2vw,44px); font-weight:700; letter-spacing:-0.025em; color:var(--ink-strong); margin:10px 0 8px; }
+  .powered { display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:var(--ink-soft); margin:0 0 16px;
+    padding:6px 12px; background:var(--panel-2); border:1px solid var(--line); border-radius:99px; }
+  .powered::before { content:""; width:9px; height:9px; border-radius:2px; background:var(--orange); transform:rotate(45deg); display:inline-block; }
   .hero p { font-size:18px; color:var(--ink); max-width:660px; margin:0; }
   .hero .sub { color:var(--ink-soft); font-size:15px; margin-top:10px; }
 
@@ -131,7 +124,14 @@
 
 <div class="topbar">
   <div class="row">
-    <span class="brand"><span class="kite"></span> stock-tracker</span>
+    <span class="brand">
+      <svg class="kite" viewBox="0 0 100 100" aria-label="stock-tracker logo" role="img">
+        <!-- Zerodha Kite chevron, laterally inverted (points right) -->
+        <g transform="translate(100,0) scale(-1,1)">
+          <path d="M88,4 L30,50 L52,50 L88,36 Z" fill="#ff5722"/>
+          <path d="M30,50 L88,96 L88,64 L52,50 Z" fill="#d8442b"/>
+        </g>
+      </svg> stock-tracker</span>
     <nav class="navlinks">
       <a href="#what">What it is</a>
       <a href="#morning">Daily routine</a>
@@ -147,6 +147,7 @@
   <header class="hero" id="what">
     <div class="eyebrow">A personal markets assistant</div>
     <h1>It does the stock homework, so you don't have to.</h1>
+    <p class="powered">Powered by Zerodha-Kite and Gemini</p>
     <p class="big">stock-tracker keeps an eye on the Indian stocks you care about and does the same research a diligent investor would do by hand — reading the news, checking the fundamentals, and watching what big investors are quietly doing — then hands you a plain-English summary every morning.</p>
     <p class="sub">Built on your own Zerodha account. It never trades on its own without you.</p>
   </header>
